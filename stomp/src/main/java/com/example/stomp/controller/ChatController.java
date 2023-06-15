@@ -15,9 +15,9 @@ public class ChatController {
 
     private final SimpMessageSendingOperations operations;
 
-    // /pub/chatroom/id
-    @MessageMapping("/channel/{id}")
-    public void sendMessage(@DestinationVariable("id") Long id, Message message) {
+    // /pub/channel/id
+    @MessageMapping("/channel")
+    public void sendMessage(Message message) {
         operations.convertAndSend
                 ("/sub/channel/" + message.getChannelId(), message);
         log.info("메세지 전송 성공");
