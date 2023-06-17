@@ -7,8 +7,6 @@ import lombok.NoArgsConstructor;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Message {
-    private String routingKey;
-    private String sender;
-    private String message;
+public class Queue {
+    private String queueName;
 }
