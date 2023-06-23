@@ -1,20 +1,21 @@
 package com.example.rabbitmq.procon;
 
-import com.example.rabbitmq.model.Queue;
+import com.example.rabbitmq.model.Message;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.amqp.rabbit.annotation.RabbitHandler;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
+@RabbitListener(queues = "#{queue.name}")
+@Slf4j
 public class Consumer {
 
-    private final RabbitTemplate rabbitTemplate;
+    @RabbitHandler
+    public void receiveMessage(final Message message) {
 
-    @RabbitListener(queues = "queue")
-    public void receiveMessage(Queue queue) {
-        rabbitTemplate.receiveAndConvert(queue.getQueueName());
-        System.out.println("메세지 받아짐");
+        log.info("메세지 수신 성공! " + message.getSender() + ": " + message.getMessage());
     }
 }

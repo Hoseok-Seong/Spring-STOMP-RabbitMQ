@@ -16,9 +16,11 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class RabbitmqConfig {
 
-    private static final String topicExchangeName = "topic";
+    private static final String topicExchangeName = "my_topic";
 
-    private static final String queueName = "queue";
+    private static final String queueName = "my_queue";
+
+    private static final String routingKey = "foo.bar.#";
 
     @Value("${spring.rabbitmq.host}")
     private String host;
@@ -32,9 +34,10 @@ public class RabbitmqConfig {
     @Value("${spring.rabbitmq.port}")
     private int port;
 
+    // durable: true는 rabbitmq가 재실행되어도 큐가 삭제되지 않는다
     @Bean
     Queue queue() {
-        return new Queue(queueName);
+        return new Queue(queueName, true);
     }
 
     @Bean
@@ -44,9 +47,8 @@ public class RabbitmqConfig {
 
     @Bean
     Binding binding(Queue queue, TopicExchange topicExchange) {
-        return BindingBuilder.bind(queue).to(topicExchange).with("foo.bar.#");
+        return BindingBuilder.bind(queue).to(topicExchange).with(routingKey);
     }
-
 
     @Bean
     RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory, MessageConverter messageConverter) {
