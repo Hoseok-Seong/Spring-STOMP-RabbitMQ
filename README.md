@@ -69,7 +69,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
   - 라우팅 키는 "foo.bar.#" 로 설정
 
 * build.gradle 의존성 추가
-  - implementation 'org.springframework.boot:spring-boot-starter-websocket'
+  - implementation 'org.springframework.boot:spring-boot-starter-amqp'
 
 * Producer 코드
 ``` bash
