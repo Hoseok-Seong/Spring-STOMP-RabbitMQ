@@ -4,3 +4,5 @@ spring:
     username: guest
     password: guest
     port: 5672
+    template:
+      reply-timeout: 60000

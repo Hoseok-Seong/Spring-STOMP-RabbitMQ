@@ -1,9 +1,11 @@
 package com.example.rabbitmq.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.core.TopicExchange;
+import org.springframework.amqp.rabbit.annotation.EnableRabbit;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -13,6 +15,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+@EnableRabbit
 @Configuration
 public class RabbitmqConfig {
 
@@ -34,10 +37,13 @@ public class RabbitmqConfig {
     @Value("${spring.rabbitmq.port}")
     private int port;
 
-    // durable: true는 rabbitmq가 재실행되어도 큐가 삭제되지 않는다
+    @Value("${spring.rabbitmq.template.reply-timeout}")
+    private Integer replyTimeout;
+
+    // durable: true는 rabbitmq가 재실행되어도 큐가 소멸되지 않는다
     @Bean
     Queue queue() {
-        return new Queue(queueName, true);
+        return new Queue(queueName, false);
     }
 
     @Bean
@@ -52,8 +58,9 @@ public class RabbitmqConfig {
 
     @Bean
     RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory, MessageConverter messageConverter) {
-        RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory);
+        final RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory);
         rabbitTemplate.setMessageConverter(messageConverter);
+        rabbitTemplate.setReplyTimeout(replyTimeout);
         return rabbitTemplate;
     }
 
@@ -69,7 +76,8 @@ public class RabbitmqConfig {
 
     @Bean
     MessageConverter messageConverter() {
-        return new Jackson2JsonMessageConverter();
+        ObjectMapper objectMapper = new ObjectMapper();
+        return new Jackson2JsonMessageConverter(objectMapper);
     }
 
 }
